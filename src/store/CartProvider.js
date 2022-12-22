@@ -7,16 +7,53 @@ const defaultCartState = {
 };
 
 const cartReducer = (state, action) => {
+    let updatedItems;
+
     switch (action.type) {
         case "ADD_ITEM":
-            const updatedItems = state.items.concat(action.item);
+            const existingCartItemIndex = state.items.findIndex(
+                (item) => item.id === action.item.id
+            );
+
+            const existingCartItem = state.items[existingCartItemIndex];
+
+            if (existingCartItem) {
+                updatedItems = [...state.items];
+                updatedItems[existingCartItemIndex] = {
+                    ...existingCartItem,
+                    amount: existingCartItem.amount + action.item.amount,
+                };
+            } else {
+                updatedItems = state.items.concat(action.item);
+            }
+
             const newTotalAmount =
                 state.totalAmount + action.item.price * action.item.amount;
             return {
                 items: updatedItems,
                 totalAmount: newTotalAmount,
             };
-
+        case "REMOVE_ITEM":
+            const cartItemIndex = state.items.findIndex(
+                (item) => item.id === action.id
+            );
+            const cartItem = state.items[cartItemIndex];
+            const updatedTotalAmount = state.totalAmount - cartItem.price;
+            if (cartItem.amount === 1) {
+                updatedItems = state.items.filter(
+                    (item) => item.id !== action.id
+                );
+            } else {
+                updatedItems = [...state.items];
+                updatedItems[cartItemIndex] = {
+                    ...cartItem,
+                    amount: cartItem.amount - 1,
+                };
+            }
+            return {
+                items: updatedItems,
+                totalAmount: updatedTotalAmount,
+            };
         default:
             break;
     }

@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { submitOrder } from "../../api";
 import CartContext from "../../store/cart-context";
-import CheckoutContext from "../../store/Checkout/checkoutContext";
 import Button from "../UI/Button";
 import Modal from "../UI/Modal";
 import classes from "./Checkout.module.css";

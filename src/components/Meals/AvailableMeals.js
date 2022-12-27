@@ -1,42 +1,39 @@
+import { useEffect, useState } from "react";
+import { getMeals } from "../../api";
 import Card from "../UI/Card";
 import classes from "./AvailableMeals.module.css";
 import MealItem from "./MealItem/MealItem";
 
-const DUMMY_MEALS = [
-    {
-        id: "m1",
-        name: "Sushi",
-        description: "Finest fish and veggies",
-        price: 22.99,
-    },
-    {
-        id: "m2",
-        name: "Schnitzel",
-        description: "A german specialty!",
-        price: 16.5,
-    },
-    {
-        id: "m3",
-        name: "Barbecue Burger",
-        description: "American, raw, meaty",
-        price: 12.99,
-    },
-    {
-        id: "m4",
-        name: "Green Bowl",
-        description: "Healthy...and green...",
-        price: 18.99,
-    },
-];
-
 const AvailableMeals = () => {
-    const mealsList = DUMMY_MEALS.map((meal) => (
+    const [availableMeals, setAvailableMeals] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+    useEffect(() => {
+        setIsLoading(true);
+        setError();
+        getMeals()
+            .then((res) => {
+                setAvailableMeals(res);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                setIsLoading(false);
+                setError(err.message);
+            });
+    }, []);
+    const mealsList = availableMeals.map((meal) => (
         <MealItem key={meal.id} {...meal} />
     ));
     return (
         <section className={classes.meals}>
             <Card>
-                <ul>{mealsList}</ul>
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : error ? (
+                    <p>{error}</p>
+                ) : (
+                    <ul>{mealsList}</ul>
+                )}
             </Card>
         </section>
     );

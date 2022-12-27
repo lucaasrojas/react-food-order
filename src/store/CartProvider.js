@@ -4,6 +4,7 @@ import CartContext from "./cart-context";
 const defaultCartState = {
     items: [],
     totalAmount: 0,
+    show: false,
 };
 
 const cartReducer = (state, action) => {
@@ -30,6 +31,7 @@ const cartReducer = (state, action) => {
             const newTotalAmount =
                 state.totalAmount + action.item.price * action.item.amount;
             return {
+                ...state,
                 items: updatedItems,
                 totalAmount: newTotalAmount,
             };
@@ -51,8 +53,25 @@ const cartReducer = (state, action) => {
                 };
             }
             return {
+                ...state,
                 items: updatedItems,
                 totalAmount: updatedTotalAmount,
+            };
+        case "SHOW_CART":
+            return {
+                ...state,
+                show: true,
+            };
+        case "HIDE_CART":
+            return {
+                ...state,
+                show: false,
+            };
+        case "CLEAR_CART":
+            return {
+                ...state,
+                items: [],
+                totalAmount: 0,
             };
         default:
             break;
@@ -78,11 +97,25 @@ const CartProvider = (props) => {
             id,
         });
     };
+
+    const showCartHandler = () => {
+        dispatchCartAction({ type: "SHOW_CART" });
+    };
+    const hideCartHandler = () => {
+        dispatchCartAction({ type: "HIDE_CART" });
+    };
+    const clearCartHandler = () => {
+        dispatchCartAction({ type: "CLEAR_CART" });
+    };
     const cartContext = {
         items: cartState.items,
         totalAmount: cartState.totalAmount,
         addItem: addItemToCartHandler,
         removeItem: removeItemFromCartHandler,
+        showCart: showCartHandler,
+        hideCart: hideCartHandler,
+        clearCart: clearCartHandler,
+        show: cartState.show,
     };
     return (
         <CartContext.Provider value={cartContext}>
